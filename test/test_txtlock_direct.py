@@ -14,7 +14,7 @@ class Address(str):
 
 mock_gl.Address = Address
 mock_gl.u256 = int
-mock_gl.Contract = object
+mock_gl.contract.Contract = object
 
 class MockUserError(Exception):
     pass
@@ -190,3 +190,81 @@ def test_resolve_reverts_after_deadline_gate(mock_genlayer):
     contract.resolve()
     assert contract.status == txtlock.STATE_SETTLED
     assert contract.marker == txtlock.MARKER_PAID_OPERATOR
+
+def test_expire_refund(mock_genlayer):
+    txtlock.gl.message = MockMessage("0xoperator", 0)
+    contract = txtlock.TxtLock(
+        depositor="0xdepositor",
+        record_fqdn="test.com",
+        expected_txt="secret123",
+        hold_seconds=3600,
+        cancel_window_seconds=1800,
+        resolve_window_seconds=3600
+    )
+    txtlock.gl.message = MockMessage("0xdepositor", 100, dt="2026-09-15T12:00:00Z")
+    url = txtlock.DOH.format(fqdn="test.com")
+    mock_genlayer.nondet.web.mock_responses[url] = json.dumps({
+        "Status": 0,
+        "Answer": [{"type": 16, "data": "\"secret123\""}]
+    })
+    contract.fund_escrow()
+    
+    txtlock.gl.message = MockMessage("0xanyone", 0, dt="2026-09-15T13:30:00Z")
+    with pytest.raises(MockUserError, match="resolve deadline has not passed yet"):
+        contract.expire()
+        
+    txtlock.gl.message = MockMessage("0xanyone", 0, dt="2026-09-15T14:30:00Z")
+    contract.expire()
+    assert contract.status == txtlock.STATE_EXPIRED
+    assert contract.marker == txtlock.MARKER_REFUNDED
+
+def test_second_resolve_fails(mock_genlayer):
+    txtlock.gl.message = MockMessage("0xoperator", 0)
+    contract = txtlock.TxtLock(
+        depositor="0xdepositor",
+        record_fqdn="test.com",
+        expected_txt="secret123",
+        hold_seconds=3600,
+        cancel_window_seconds=1800,
+        resolve_window_seconds=3600
+    )
+    txtlock.gl.message = MockMessage("0xdepositor", 100, dt="2026-09-15T12:00:00Z")
+    url = txtlock.DOH.format(fqdn="test.com")
+    mock_genlayer.nondet.web.mock_responses[url] = json.dumps({
+        "Status": 0,
+        "Answer": [{"type": 16, "data": "\"secret123\""}]
+    })
+    contract.fund_escrow()
+    
+    txtlock.gl.message = MockMessage("0xoperator", 0, dt="2026-09-15T13:30:00Z")
+    contract.resolve()
+    
+    txtlock.gl.message = MockMessage("0xoperator", 0, dt="2026-09-15T13:35:00Z")
+    with pytest.raises(MockUserError, match="status must be FUNDED"):
+        contract.resolve()
+
+def test_withdraw_pulls_credit(mock_genlayer):
+    txtlock.gl.message = MockMessage("0xoperator", 0)
+    contract = txtlock.TxtLock(
+        depositor="0xdepositor",
+        record_fqdn="test.com",
+        expected_txt="secret123",
+        hold_seconds=3600,
+        cancel_window_seconds=1800,
+        resolve_window_seconds=3600
+    )
+    txtlock.gl.message = MockMessage("0xdepositor", 100, dt="2026-09-15T12:00:00Z")
+    url = txtlock.DOH.format(fqdn="test.com")
+    mock_genlayer.nondet.web.mock_responses[url] = json.dumps({
+        "Status": 0,
+        "Answer": [{"type": 16, "data": "\"secret123\""}]
+    })
+    contract.fund_escrow()
+    
+    txtlock.gl.message = MockMessage("0xanyone", 0, dt="2026-09-15T13:30:00Z")
+    contract.resolve()
+    assert contract.operator_credit == 100
+    
+    txtlock.gl.message = MockMessage("0xoperator", 0, dt="2026-09-15T13:35:00Z")
+    contract.withdraw()
+    assert contract.operator_credit == 0

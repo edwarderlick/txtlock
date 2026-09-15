@@ -26,8 +26,8 @@ The operator deploys the contract and freezes the target domain, expected TXT re
 | Test Case | Condition | Verdict | Payout |
 | :--- | :--- | :--- | :--- |
 | **MATCH** | DoH lookup returns exactly the frozen token. | `MATCH` | Operator is credited. |
-| **FETCH_FAILED** | DoH query fails, returns no TXT record, or network error. | `FETCH_FAILED` | Depositor is refunded. |
-| **MISMATCH** | TXT record exists but does not match the frozen token exactly. | `MISMATCH` | Depositor is refunded. |
+| **FETCH_FAILED** | DoH query fails (e.g. network error). | `FETCH_FAILED` | Depositor is refunded. |
+| **MISMATCH** | TXT record exists but doesn't match exactly, or no TXT records found. | `MISMATCH` | Depositor is refunded. |
 
 ## How It Works
 
