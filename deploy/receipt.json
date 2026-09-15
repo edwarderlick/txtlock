@@ -1,0 +1,9 @@
+{
+  "contract_address": "0x5a449a677b9F9ddcE1bB47106333FB6ebc96DcF5",
+  "deploy_tx": "0x0c175a355b7aada9e8fe8a1caf1f531fe6148d8a7f1be2aa19419fdba016413a",
+  "operator": "0xA1F567B94C5FA8b370C7040a194e8F4351242283",
+  "depositor_smoke": "0x000000000000000000000000000000000000dEaD",
+  "network": "studio_devnet",
+  "chain_id": 61997,
+  "explorer": "https://explorer-studio-dev.genlayer.com/address/0x5a449a677b9F9ddcE1bB47106333FB6ebc96DcF5?chain=studio-devnet"
+}
