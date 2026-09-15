@@ -10,7 +10,7 @@ The operator deploys the contract and freezes the target domain, expected TXT re
 - **Chain ID:** `61997`
 - **RPC Endpoint:** `https://studio-dev.genlayer.com/api`
 - **Contract Address:** [`0x5a449a677b9F9ddcE1bB47106333FB6ebc96DcF5`](https://explorer-studio-dev.genlayer.com/address/0x5a449a677b9F9ddcE1bB47106333FB6ebc96DcF5?chain=studio-devnet)
-- **Deployment Tx:** [`0x0c175a355b7aada9e8fe8a1caf1f531fe6148d8a7f1be2aa19419fdba016413a`](https://explorer-studio-dev.genlayer.com/transaction/0x0c175a355b7aada9e8fe8a1caf1f531fe6148d8a7f1be2aa19419fdba016413a?chain=studio-devnet)
+- **Deployment Tx:** [`0x0c175a355b7aada9e8fe8a1caf1f531fe6148d8a7f1be2aa19419fdba016413a`](https://explorer-studio-dev.genlayer.com/transactions/0x0c175a355b7aada9e8fe8a1caf1f531fe6148d8a7f1be2aa19419fdba016413a?chain=studio-devnet)
 - **GitHub Repository:** [edwarderlick/txtlock](https://github.com/edwarderlick/txtlock)
 
 ## Features & Constraints
